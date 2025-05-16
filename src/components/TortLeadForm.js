@@ -625,8 +625,8 @@ const TortLeadForm = () => {
           <FormGroup>
             <Label>Did your insurance policy include:</Label>
             <div style={{ marginLeft: '1rem', marginBottom: '0.5rem' }}>
-              <div>✅ Bodily Injury (BI) coverage – covers injuries you may cause to others</div>
-              <div>✅ Property Damage (PD) coverage – covers damage you may cause to another vehicle or property</div>
+              <div>Bodily Injury (BI) coverage – covers injuries you may cause to others</div>
+              <div>Property Damage (PD) coverage – covers damage you may cause to another vehicle or property</div>
             </div>
             <RadioGroup style={{ flexDirection: 'column', gap: '0.5rem' }}>
               <RadioOption>
