@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { submitTortLead } from '../api/leadService';
 import { validateForm } from '../utils/validation';
@@ -208,12 +208,46 @@ const TortLeadForm = () => {
   const [submitError, setSubmitError] = useState('');
   const [transferDID, setTransferDID] = useState('');
   
+  // Generate next sourceId on component mount
+  useEffect(() => {
+    generateNextSourceId();
+  }, []);
+
+  // Function to generate the next sourceId in sequence
+  const generateNextSourceId = () => {
+    // Get the last used ID from localStorage or start from 0
+    const lastUsedId = parseInt(localStorage.getItem('lastSourceIdNumber') || '0', 10);
+    
+    // Calculate the next ID
+    const nextId = lastUsedId + 1;
+    
+    // Format with leading zeros to ensure 6 digits
+    const paddedId = nextId.toString().padStart(6, '0');
+    const newSourceId = `CC${paddedId}`;
+    
+    // Save the next ID for future use
+    localStorage.setItem('lastSourceIdNumber', nextId.toString());
+    
+    // Update the form state with the new sourceId
+    setFormData(prevData => ({
+      ...prevData,
+      sourceId: newSourceId
+    }));
+    
+    return newSourceId;
+  };
+  
   // Handle input changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     
     // For checkboxes and radio buttons
     const inputValue = type === 'checkbox' || type === 'radio' ? checked : value;
+    
+    // Don't allow manual changes to sourceId as it's auto-generated
+    if (name === 'sourceId') {
+      return;
+    }
     
     setFormData({
       ...formData,
@@ -256,13 +290,13 @@ const TortLeadForm = () => {
         // For demonstration, we're using a static number
         setTransferDID('1-800-555-7890');
         
-        // Reset form
+        // Reset form but generate a new sourceId
         setFormData({
           isTest: false,
           callerId: '',
           claimantName: '',
           claimantEmail: '',
-          sourceId: '',
+          sourceId: generateNextSourceId(), // Generate a new ID for the next lead
           incidentState: '',
           incidentDate: '',
           atFault: false,
@@ -369,19 +403,17 @@ const TortLeadForm = () => {
           {errors.claimantEmail && <ErrorMessage>{errors.claimantEmail}</ErrorMessage>}
         </FormGroup>
         
-        {/* Source ID */}
+        {/* Source ID - Now Read-Only */}
         <FormGroup>
-          <Label htmlFor="sourceId">Source ID*</Label>
+          <Label htmlFor="sourceId">Source ID (Auto-Generated)*</Label>
           <Input
             type="text"
             id="sourceId"
             name="sourceId"
             value={formData.sourceId}
-            onChange={handleChange}
-            placeholder="Your lead ID"
-            hasError={!!errors.sourceId}
+            readOnly
+            style={{ backgroundColor: '#f5f5f5' }}
           />
-          {errors.sourceId && <ErrorMessage>{errors.sourceId}</ErrorMessage>}
         </FormGroup>
         
         {/* Incident State */}

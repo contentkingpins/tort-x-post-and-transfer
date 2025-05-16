@@ -47,6 +47,17 @@ export const validateDate = (date) => {
 };
 
 /**
+ * Validates a source ID
+ * @param {string} sourceId - The source ID to validate
+ * @returns {boolean} - Whether the source ID is valid
+ */
+export const validateSourceId = (sourceId) => {
+  // The auto-generated format should be CC followed by 6 digits
+  const sourceIdRegex = /^CC\d{6}$/;
+  return sourceIdRegex.test(sourceId);
+};
+
+/**
  * Validates the entire form data
  * @param {Object} formData - The form data to validate
  * @returns {Object} - Object with validation results
@@ -61,8 +72,11 @@ export const validateForm = (formData) => {
     errors.callerId = 'Please enter a valid phone number';
   }
   
+  // SourceId is now auto-generated, but still validate it
   if (!formData.sourceId) {
     errors.sourceId = 'Source ID is required';
+  } else if (!validateSourceId(formData.sourceId)) {
+    errors.sourceId = 'Invalid Source ID format';
   }
   
   if (!formData.incidentState) {
@@ -90,5 +104,6 @@ export default {
   validatePhone,
   validateEmail,
   validateDate,
+  validateSourceId,
   validateForm
 }; 
