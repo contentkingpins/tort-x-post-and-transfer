@@ -198,7 +198,7 @@ const TortLeadForm = () => {
     attorney: false,
     settlement: false,
     trustedFormCertURL: '',
-    pubId: ''
+    pubId: 'Claim-Connectors'
   });
   
   // UI state
@@ -303,7 +303,7 @@ const TortLeadForm = () => {
           attorney: false,
           settlement: false,
           trustedFormCertURL: '',
-          pubId: ''
+          pubId: 'Claim-Connectors'
         });
         
         setErrors({});
@@ -544,16 +544,16 @@ const TortLeadForm = () => {
           />
         </FormGroup>
         
-        {/* Publisher ID */}
+        {/* Publisher ID - Now Read-Only */}
         <FormGroup>
-          <Label htmlFor="pubId">Publisher ID</Label>
+          <Label htmlFor="pubId">Publisher ID (Static)</Label>
           <Input
             type="text"
             id="pubId"
             name="pubId"
             value={formData.pubId}
-            onChange={handleChange}
-            placeholder="Publisher identifier"
+            readOnly
+            style={{ backgroundColor: '#f5f5f5' }}
           />
         </FormGroup>
         
