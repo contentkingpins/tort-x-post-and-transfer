@@ -97,6 +97,29 @@ const SuccessMessage = styled.div`
   margin-bottom: 1rem;
 `;
 
+const DidTransferInfo = styled.div`
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #e2f0fd;
+  border: 1px solid #b6d9f5;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const DidNumber = styled.div`
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+  color: #0062cc;
+`;
+
+const TransferInstructions = styled.div`
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+`;
+
 const ErrorAlert = styled.div`
   background-color: #f8d7da;
   color: #721c24;
@@ -183,6 +206,7 @@ const TortLeadForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [transferDID, setTransferDID] = useState('');
   
   // Handle input changes
   const handleChange = (e) => {
@@ -228,6 +252,10 @@ const TortLeadForm = () => {
       if (response && response.status === 'ok') {
         setSubmitSuccess(true);
         
+        // Set transfer DID number (this would come from the API response in a real app)
+        // For demonstration, we're using a static number
+        setTransferDID('1-800-555-7890');
+        
         // Reset form
         setFormData({
           isTest: false,
@@ -259,7 +287,19 @@ const TortLeadForm = () => {
     <FormContainer>
       {submitSuccess && (
         <SuccessMessage>
-          Lead successfully submitted and transferred to the buyer!
+          <div>Lead successfully submitted and transferred to the buyer!</div>
+          
+          <DidTransferInfo>
+            <h3>Transfer Call Information</h3>
+            <p>Use the following number to transfer this lead:</p>
+            <DidNumber>{transferDID}</DidNumber>
+            <TransferInstructions>
+              1. Inform the claimant that you'll transfer them to a specialist<br />
+              2. Place the current call on hold<br />
+              3. Dial the number above<br />
+              4. Complete the warm transfer once connected
+            </TransferInstructions>
+          </DidTransferInfo>
         </SuccessMessage>
       )}
       

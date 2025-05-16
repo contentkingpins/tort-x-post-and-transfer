@@ -30,7 +30,7 @@ function App() {
   return (
     <>
       <GlobalStyles />
-      <MainLayout title="Tort Lead Transfer Form">
+      <MainLayout title="TORT X MVA Lead Form">
         <TortLeadForm />
       </MainLayout>
     </>
