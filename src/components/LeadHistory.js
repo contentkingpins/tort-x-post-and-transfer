@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { getSubmittedLeads, updateLeadPaymentStatus, exportLeadsToCSV } from '../api/leadService';
+import { getSubmittedLeads, exportLeadsToCSV } from '../api/leadService';
 
 const HistoryContainer = styled.div`
   margin-top: 2rem;
@@ -88,11 +88,6 @@ const StatusBadge = styled.span`
   color: ${props => props.status === 'success' ? '#155724' : '#721c24'};
 `;
 
-const PaidCheckbox = styled.input`
-  transform: scale(1.2);
-  cursor: pointer;
-`;
-
 const NoLeadsMessage = styled.div`
   text-align: center;
   padding: 2rem;
@@ -118,15 +113,6 @@ const LeadHistory = () => {
     loadedLeads.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
     setLeads(loadedLeads);
     setIsLoading(false);
-  };
-  
-  // Handle payment status change
-  const handlePaymentToggle = (sourceId) => {
-    const lead = leads.find(l => l.sourceId === sourceId);
-    if (lead) {
-      updateLeadPaymentStatus(sourceId, !lead.paid);
-      loadLeads(); // Refresh the leads list
-    }
   };
   
   // Handle export to CSV
@@ -164,8 +150,6 @@ const LeadHistory = () => {
       <ControlsRow>
         <LeadCount>
           {leads.length} leads submitted
-          {leads.filter(l => l.paid).length > 0 && 
-            ` (${leads.filter(l => l.paid).length} marked as paid)`}
         </LeadCount>
         
         <div>
@@ -188,7 +172,6 @@ const LeadHistory = () => {
               <Th>Phone</Th>
               <Th>State</Th>
               <Th>Status</Th>
-              <Th>Paid</Th>
             </tr>
           </thead>
           <tbody>
@@ -203,13 +186,6 @@ const LeadHistory = () => {
                   <StatusBadge status={lead.status}>
                     {lead.status}
                   </StatusBadge>
-                </Td>
-                <Td>
-                  <PaidCheckbox 
-                    type="checkbox" 
-                    checked={lead.paid} 
-                    onChange={() => handlePaymentToggle(lead.sourceId)}
-                  />
                 </Td>
               </tr>
             ))}

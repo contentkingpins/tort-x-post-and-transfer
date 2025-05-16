@@ -19,7 +19,6 @@ const saveLeadToHistory = (leadData, status) => {
     ...leadData,
     submittedAt: new Date().toISOString(),
     status,
-    paid: false, // Track payment status
     apiResponse: status === 'success' ? { status: 'ok' } : { status: 'error' }
   };
   
@@ -41,24 +40,6 @@ export const getSubmittedLeads = () => {
 };
 
 /**
- * Updates a lead's payment status
- * @param {string} sourceId - The source ID of the lead to update
- * @param {boolean} paid - The new payment status
- */
-export const updateLeadPaymentStatus = (sourceId, paid) => {
-  const leads = getSubmittedLeads();
-  const updatedLeads = leads.map(lead => {
-    if (lead.sourceId === sourceId) {
-      return { ...lead, paid };
-    }
-    return lead;
-  });
-  
-  localStorage.setItem('submittedLeads', JSON.stringify(updatedLeads));
-  return updatedLeads;
-};
-
-/**
  * Exports leads to CSV format
  * @param {Array} leads - Array of leads to export
  * @returns {string} - CSV string
@@ -73,7 +54,6 @@ export const exportLeadsToCSV = (leads) => {
     'sourceId',
     'submittedAt',
     'status',
-    'paid',
     'callerId',
     'claimantName',
     'claimantEmail',
@@ -180,6 +160,5 @@ const formatDate = (date) => {
 export default {
   submitTortLead,
   getSubmittedLeads,
-  updateLeadPaymentStatus,
   exportLeadsToCSV
 }; 
