@@ -6,6 +6,114 @@ import axios from 'axios';
 const API_URL = 'https://display.ringba.com/enrich/263344012027051643';
 
 /**
+ * Saves a lead to localStorage for tracking
+ * @param {Object} leadData - The lead data to save
+ * @param {string} status - The submission status
+ */
+const saveLeadToHistory = (leadData, status) => {
+  // Get existing leads from localStorage or initialize empty array
+  const existingLeads = JSON.parse(localStorage.getItem('submittedLeads') || '[]');
+  
+  // Add submission timestamp and status
+  const leadWithMeta = {
+    ...leadData,
+    submittedAt: new Date().toISOString(),
+    status,
+    paid: false, // Track payment status
+    apiResponse: status === 'success' ? { status: 'ok' } : { status: 'error' }
+  };
+  
+  // Add to existing leads
+  existingLeads.push(leadWithMeta);
+  
+  // Save back to localStorage
+  localStorage.setItem('submittedLeads', JSON.stringify(existingLeads));
+  
+  return leadWithMeta;
+};
+
+/**
+ * Gets all submitted leads from localStorage
+ * @returns {Array} - Array of submitted leads
+ */
+export const getSubmittedLeads = () => {
+  return JSON.parse(localStorage.getItem('submittedLeads') || '[]');
+};
+
+/**
+ * Updates a lead's payment status
+ * @param {string} sourceId - The source ID of the lead to update
+ * @param {boolean} paid - The new payment status
+ */
+export const updateLeadPaymentStatus = (sourceId, paid) => {
+  const leads = getSubmittedLeads();
+  const updatedLeads = leads.map(lead => {
+    if (lead.sourceId === sourceId) {
+      return { ...lead, paid };
+    }
+    return lead;
+  });
+  
+  localStorage.setItem('submittedLeads', JSON.stringify(updatedLeads));
+  return updatedLeads;
+};
+
+/**
+ * Exports leads to CSV format
+ * @param {Array} leads - Array of leads to export
+ * @returns {string} - CSV string
+ */
+export const exportLeadsToCSV = (leads) => {
+  if (!leads || leads.length === 0) {
+    return '';
+  }
+  
+  // Define CSV columns
+  const columns = [
+    'sourceId',
+    'submittedAt',
+    'status',
+    'paid',
+    'callerId',
+    'claimantName',
+    'claimantEmail',
+    'incidentState',
+    'incidentDate',
+    'atFault',
+    'attorney',
+    'settlement'
+  ];
+  
+  // Create CSV header
+  const header = columns.join(',');
+  
+  // Create CSV rows
+  const rows = leads.map(lead => {
+    return columns.map(column => {
+      // Format boolean values to Yes/No
+      if (typeof lead[column] === 'boolean') {
+        return lead[column] ? 'Yes' : 'No';
+      }
+      
+      // Handle empty values
+      if (lead[column] === undefined || lead[column] === null) {
+        return '';
+      }
+      
+      // Escape commas in string values
+      if (typeof lead[column] === 'string' && lead[column].includes(',')) {
+        return `"${lead[column]}"`;
+      }
+      
+      return lead[column];
+    }).join(',');
+  });
+  
+  // Combine header and rows
+  return [header, ...rows].join('\n');
+};
+
+/**
  * Submits a tort lead to the API
  * @param {Object} leadData - The lead data to submit
  * @returns {Promise} - The API response
@@ -29,9 +137,16 @@ export const submitTortLead = async (leadData) => {
       }
     });
     
+    // Save to lead history
+    saveLeadToHistory(leadData, 'success');
+    
     return response.data;
   } catch (error) {
     console.error('Error submitting lead:', error);
+    
+    // Save failed submission to history
+    saveLeadToHistory(leadData, 'failed');
+    
     throw error;
   }
 };
@@ -63,5 +178,8 @@ const formatDate = (date) => {
 };
 
 export default {
-  submitTortLead
+  submitTortLead,
+  getSubmittedLeads,
+  updateLeadPaymentStatus,
+  exportLeadsToCSV
 }; 
