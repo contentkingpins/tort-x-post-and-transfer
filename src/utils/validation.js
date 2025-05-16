@@ -58,6 +58,29 @@ export const validateSourceId = (sourceId) => {
 };
 
 /**
+ * Checks if accident date is more than 12 months old
+ * @param {string} dateString - The date string to check (MM/DD/YYYY)
+ * @returns {boolean} - Whether the date is more than 12 months old
+ */
+export const isDateTooOld = (dateString) => {
+  if (!dateString) return false;
+  
+  // Parse the date (MM/DD/YYYY format)
+  const parts = dateString.split('/');
+  if (parts.length !== 3) return false;
+  
+  const accidentDate = new Date(parts[2], parts[0] - 1, parts[1]);
+  const today = new Date();
+  
+  // Calculate the difference in months
+  const monthsDiff = 
+    (today.getFullYear() - accidentDate.getFullYear()) * 12 + 
+    (today.getMonth() - accidentDate.getMonth());
+  
+  return monthsDiff > 12;
+};
+
+/**
  * Validates the entire form data
  * @param {Object} formData - The form data to validate
  * @returns {Object} - Object with validation results
@@ -87,6 +110,8 @@ export const validateForm = (formData) => {
     errors.incidentDate = 'Incident date is required';
   } else if (!validateDate(formData.incidentDate)) {
     errors.incidentDate = 'Please enter a valid date (MM/DD/YYYY)';
+  } else if (isDateTooOld(formData.incidentDate)) {
+    errors.incidentDate = 'Accident date is more than 12 months old';
   }
   
   // Optional fields with validation
@@ -105,5 +130,6 @@ export default {
   validateEmail,
   validateDate,
   validateSourceId,
+  isDateTooOld,
   validateForm
 }; 

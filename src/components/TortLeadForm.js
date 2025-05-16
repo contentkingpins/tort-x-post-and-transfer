@@ -184,6 +184,44 @@ const US_STATES = [
   { value: 'DC', label: 'District of Columbia' }
 ];
 
+// Alert styled components
+const EligibilityAlert = styled.div`
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border: 2px solid #f5c6cb;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+`;
+
+const AlertIcon = styled.span`
+  margin-right: 10px;
+  font-size: 1.5rem;
+`;
+
+const AlertMessage = styled.div`
+  flex: 1;
+`;
+
+const EndCallButton = styled.button`
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  
+  &:hover {
+    background-color: #c82333;
+  }
+`;
+
 // New styled component for section divider
 const SectionDivider = styled.div`
   margin: 2rem 0 1.5rem;
@@ -223,6 +261,7 @@ const TortLeadForm = () => {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [transferDID, setTransferDID] = useState('');
+  const [showDateAlert, setShowDateAlert] = useState(false);
   
   // Generate next sourceId on component mount
   useEffect(() => {
@@ -253,6 +292,25 @@ const TortLeadForm = () => {
     return newSourceId;
   };
   
+  // Check if accident date is more than 12 months old
+  const checkDateEligibility = (dateString) => {
+    if (!dateString) return false;
+    
+    // Parse the date (MM/DD/YYYY format)
+    const parts = dateString.split('/');
+    if (parts.length !== 3) return false;
+    
+    const accidentDate = new Date(parts[2], parts[0] - 1, parts[1]);
+    const today = new Date();
+    
+    // Calculate the difference in months
+    const monthsDiff = 
+      (today.getFullYear() - accidentDate.getFullYear()) * 12 + 
+      (today.getMonth() - accidentDate.getMonth());
+    
+    return monthsDiff > 12;
+  };
+
   // Handle input changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -279,6 +337,12 @@ const TortLeadForm = () => {
       });
     }
     
+    // Special handling for incidentDate to check eligibility
+    if (name === 'incidentDate') {
+      const isOldAccident = checkDateEligibility(value);
+      setShowDateAlert(isOldAccident);
+    }
+    
     // Clear error for this field if it exists
     if (errors[name]) {
       setErrors({
@@ -291,6 +355,13 @@ const TortLeadForm = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Check date eligibility before submission
+    if (checkDateEligibility(formData.incidentDate)) {
+      setShowDateAlert(true);
+      // You might want to prevent submission here if needed
+      // return;
+    }
     
     // Validate form
     const validation = validateForm(formData);
@@ -347,6 +418,21 @@ const TortLeadForm = () => {
   
   return (
     <FormContainer>
+      {showDateAlert && (
+        <EligibilityAlert>
+          <AlertIcon>⚠️</AlertIcon>
+          <AlertMessage>
+            WARNING: Accident date is more than 12 months old. Lead does not meet eligibility criteria.
+            <div style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+              Please inform the claimant that we're unable to assist with accidents older than 12 months.
+            </div>
+          </AlertMessage>
+          <EndCallButton onClick={() => window.alert('Please end the call due to eligibility issues.')}>
+            End Call
+          </EndCallButton>
+        </EligibilityAlert>
+      )}
+      
       {submitSuccess && (
         <SuccessMessage>
           <div>Lead successfully submitted and transferred to the buyer!</div>
