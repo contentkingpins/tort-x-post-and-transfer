@@ -1,0 +1,14 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-tortleadtransfer-dev-123456-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-tortleadtransfer-dev-123456-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-tortleadtransfer-dev-123456-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-tortleadtransfer-dev-123456-deployment",
+      "UnauthRoleName": "amplify-tortleadtransfer-dev-123456-unauthRole",
+      "StackName": "amplify-tortleadtransfer-dev-123456",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-tortleadtransfer-dev-123456/abcdef0"
+    }
+  }
+} 
