@@ -61,6 +61,7 @@ export const exportLeadsToCSV = (leads) => {
     'incidentDate',
     'atFault',
     'attorney',
+    'seekingNewAttorney',
     'settlement'
   ];
   
@@ -111,6 +112,7 @@ export const submitTortLead = async (leadData) => {
         incidentDate: formatDate(leadData.incidentDate),
         atFault: leadData.atFault ? 'Yes' : 'No',
         attorney: leadData.attorney ? 'Yes' : 'No',
+        seekingNewAttorney: leadData.seekingNewAttorney ? 'Yes' : 'No',
         settlement: leadData.settlement ? 'Yes' : 'No',
         trustedFormCertURL: leadData.trustedFormCertURL || '',
         pubId: leadData.pubId || ''

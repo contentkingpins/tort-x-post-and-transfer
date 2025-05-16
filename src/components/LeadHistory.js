@@ -171,6 +171,8 @@ const LeadHistory = () => {
               <Th>Claimant Name</Th>
               <Th>Phone</Th>
               <Th>State</Th>
+              <Th>Attorney</Th>
+              <Th>Change Rep</Th>
               <Th>Status</Th>
             </tr>
           </thead>
@@ -182,6 +184,8 @@ const LeadHistory = () => {
                 <Td>{lead.claimantName || 'N/A'}</Td>
                 <Td>{lead.callerId}</Td>
                 <Td>{lead.incidentState}</Td>
+                <Td>{lead.attorney ? 'Yes' : 'No'}</Td>
+                <Td>{lead.attorney && lead.seekingNewAttorney ? 'Yes' : 'No'}</Td>
                 <Td>
                   <StatusBadge status={lead.status}>
                     {lead.status}

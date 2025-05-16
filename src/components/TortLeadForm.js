@@ -196,6 +196,7 @@ const TortLeadForm = () => {
     incidentDate: '',
     atFault: false,
     attorney: false,
+    seekingNewAttorney: false,
     settlement: false,
     trustedFormCertURL: '',
     pubId: 'Claim-Connectors'
@@ -249,10 +250,19 @@ const TortLeadForm = () => {
       return;
     }
     
-    setFormData({
-      ...formData,
-      [name]: inputValue
-    });
+    // Reset seekingNewAttorney if attorney is changed to false
+    if (name === 'attorney' && inputValue === false) {
+      setFormData({
+        ...formData,
+        [name]: inputValue,
+        seekingNewAttorney: false
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: inputValue
+      });
+    }
     
     // Clear error for this field if it exists
     if (errors[name]) {
@@ -301,6 +311,7 @@ const TortLeadForm = () => {
           incidentDate: '',
           atFault: false,
           attorney: false,
+          seekingNewAttorney: false,
           settlement: false,
           trustedFormCertURL: '',
           pubId: 'Claim-Connectors'
@@ -497,12 +508,41 @@ const TortLeadForm = () => {
                 id="attorneyNo"
                 name="attorney"
                 checked={formData.attorney === false}
-                onChange={() => setFormData({...formData, attorney: false})}
+                onChange={() => setFormData({...formData, attorney: false, seekingNewAttorney: false})}
               />
               <Label htmlFor="attorneyNo">No</Label>
             </RadioOption>
           </RadioGroup>
         </FormGroup>
+        
+        {/* Dynamic question - only shows if they have an attorney */}
+        {formData.attorney && (
+          <FormGroup>
+            <Label>Is claimant seeking to change representation?</Label>
+            <RadioGroup>
+              <RadioOption>
+                <input
+                  type="radio"
+                  id="seekingNewAttorneyYes"
+                  name="seekingNewAttorney"
+                  checked={formData.seekingNewAttorney === true}
+                  onChange={() => setFormData({...formData, seekingNewAttorney: true})}
+                />
+                <Label htmlFor="seekingNewAttorneyYes">Yes</Label>
+              </RadioOption>
+              <RadioOption>
+                <input
+                  type="radio"
+                  id="seekingNewAttorneyNo"
+                  name="seekingNewAttorney"
+                  checked={formData.seekingNewAttorney === false}
+                  onChange={() => setFormData({...formData, seekingNewAttorney: false})}
+                />
+                <Label htmlFor="seekingNewAttorneyNo">No</Label>
+              </RadioOption>
+            </RadioGroup>
+          </FormGroup>
+        )}
         
         {/* Settlement */}
         <FormGroup>
