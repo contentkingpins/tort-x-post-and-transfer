@@ -173,6 +173,7 @@ const LeadHistory = () => {
               <Th>State</Th>
               <Th>Attorney</Th>
               <Th>Change Rep</Th>
+              <Th>Insurance</Th>
               <Th>Status</Th>
             </tr>
           </thead>
@@ -186,6 +187,17 @@ const LeadHistory = () => {
                 <Td>{lead.incidentState}</Td>
                 <Td>{lead.attorney ? 'Yes' : 'No'}</Td>
                 <Td>{lead.attorney && lead.seekingNewAttorney ? 'Yes' : 'No'}</Td>
+                <Td>
+                  {lead.hasInsurance === true ? (
+                    <span>{lead.insuranceCoverage === 'both' ? 'Yes (Both)' : 
+                           lead.insuranceCoverage === 'unsure' ? 'Yes (Unsure)' : 
+                           lead.insuranceCoverage === 'none' ? 'Yes (None)' : 'Yes'}</span>
+                  ) : lead.hasInsurance === false ? (
+                    <span>No</span>
+                  ) : (
+                    <span>Unknown</span>
+                  )}
+                </Td>
                 <Td>
                   <StatusBadge status={lead.status}>
                     {lead.status}

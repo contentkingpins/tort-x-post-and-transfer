@@ -184,6 +184,19 @@ const US_STATES = [
   { value: 'DC', label: 'District of Columbia' }
 ];
 
+// New styled component for section divider
+const SectionDivider = styled.div`
+  margin: 2rem 0 1.5rem;
+  border-top: 1px solid #e9ecef;
+  padding-top: 1.5rem;
+`;
+
+const SectionTitle = styled.h3`
+  color: #003366;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+`;
+
 const TortLeadForm = () => {
   // Form state
   const [formData, setFormData] = useState({
@@ -198,6 +211,8 @@ const TortLeadForm = () => {
     attorney: false,
     seekingNewAttorney: false,
     settlement: false,
+    hasInsurance: null, // can be null (not answered), true, or false
+    insuranceCoverage: null, // 'both', 'unsure', or 'none'
     trustedFormCertURL: '',
     pubId: 'Claim-Connectors'
   });
@@ -313,6 +328,8 @@ const TortLeadForm = () => {
           attorney: false,
           seekingNewAttorney: false,
           settlement: false,
+          hasInsurance: null,
+          insuranceCoverage: null,
           trustedFormCertURL: '',
           pubId: 'Claim-Connectors'
         });
@@ -571,7 +588,82 @@ const TortLeadForm = () => {
           </RadioGroup>
         </FormGroup>
         
-        {/* Trusted Form Cert URL */}
+        {/* Insurance Section */}
+        <SectionDivider>
+          <SectionTitle>Insurance Information</SectionTitle>
+        </SectionDivider>
+        
+        {/* Has Insurance Question */}
+        <FormGroup>
+          <Label>At the time of your accident, did you have car insurance in your name or as a listed driver?</Label>
+          <RadioGroup>
+            <RadioOption>
+              <input
+                type="radio"
+                id="hasInsuranceYes"
+                name="hasInsurance"
+                checked={formData.hasInsurance === true}
+                onChange={() => setFormData({...formData, hasInsurance: true})}
+              />
+              <Label htmlFor="hasInsuranceYes">Yes</Label>
+            </RadioOption>
+            <RadioOption>
+              <input
+                type="radio"
+                id="hasInsuranceNo"
+                name="hasInsurance"
+                checked={formData.hasInsurance === false}
+                onChange={() => setFormData({...formData, hasInsurance: false})}
+              />
+              <Label htmlFor="hasInsuranceNo">No</Label>
+            </RadioOption>
+          </RadioGroup>
+        </FormGroup>
+        
+        {/* Insurance Coverage Types - Only show if they had insurance */}
+        {formData.hasInsurance === true && (
+          <FormGroup>
+            <Label>Did your insurance policy include:</Label>
+            <div style={{ marginLeft: '1rem', marginBottom: '0.5rem' }}>
+              <div>✅ Bodily Injury (BI) coverage – covers injuries you may cause to others</div>
+              <div>✅ Property Damage (PD) coverage – covers damage you may cause to another vehicle or property</div>
+            </div>
+            <RadioGroup style={{ flexDirection: 'column', gap: '0.5rem' }}>
+              <RadioOption>
+                <input
+                  type="radio"
+                  id="insuranceCoverageBoth"
+                  name="insuranceCoverage"
+                  checked={formData.insuranceCoverage === 'both'}
+                  onChange={() => setFormData({...formData, insuranceCoverage: 'both'})}
+                />
+                <Label htmlFor="insuranceCoverageBoth">Yes, I had both</Label>
+              </RadioOption>
+              <RadioOption>
+                <input
+                  type="radio"
+                  id="insuranceCoverageUnsure"
+                  name="insuranceCoverage"
+                  checked={formData.insuranceCoverage === 'unsure'}
+                  onChange={() => setFormData({...formData, insuranceCoverage: 'unsure'})}
+                />
+                <Label htmlFor="insuranceCoverageUnsure">I'm not sure what I had</Label>
+              </RadioOption>
+              <RadioOption>
+                <input
+                  type="radio"
+                  id="insuranceCoverageNone"
+                  name="insuranceCoverage"
+                  checked={formData.insuranceCoverage === 'none'}
+                  onChange={() => setFormData({...formData, insuranceCoverage: 'none'})}
+                />
+                <Label htmlFor="insuranceCoverageNone">No</Label>
+              </RadioOption>
+            </RadioGroup>
+          </FormGroup>
+        )}
+        
+        {/* Remaining form fields */}
         <FormGroup>
           <Label htmlFor="trustedFormCertURL">Trusted Form Cert URL</Label>
           <Input

@@ -62,7 +62,9 @@ export const exportLeadsToCSV = (leads) => {
     'atFault',
     'attorney',
     'seekingNewAttorney',
-    'settlement'
+    'settlement',
+    'hasInsurance',
+    'insuranceCoverage'
   ];
   
   // Create CSV header
@@ -114,6 +116,8 @@ export const submitTortLead = async (leadData) => {
         attorney: leadData.attorney ? 'Yes' : 'No',
         seekingNewAttorney: leadData.seekingNewAttorney ? 'Yes' : 'No',
         settlement: leadData.settlement ? 'Yes' : 'No',
+        hasInsurance: leadData.hasInsurance === true ? 'Yes' : leadData.hasInsurance === false ? 'No' : '',
+        insuranceCoverage: leadData.insuranceCoverage || '',
         trustedFormCertURL: leadData.trustedFormCertURL || '',
         pubId: leadData.pubId || ''
       }
