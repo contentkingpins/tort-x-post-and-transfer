@@ -649,7 +649,7 @@ const TortLeadForm = () => {
         
         {/* Settlement */}
         <FormGroup>
-          <Label>Did the claimant receive a settlement for their injuries?</Label>
+          <Label>Has the claimant ever had a settlement for injuries prior to this accident?</Label>
           <RadioGroup>
             <RadioOption>
               <input
