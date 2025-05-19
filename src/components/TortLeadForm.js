@@ -410,7 +410,14 @@ const TortLeadForm = () => {
         setSubmitError('Lead submission failed. Please try again.');
       }
     } catch (error) {
-      setSubmitError(`Error submitting lead: ${error.message || 'Unknown error'}`);
+      console.error('Error submitting lead:', error);
+      
+      // Display more user-friendly error message
+      const errorMessage = error.message || 'Unknown error occurred';
+      setSubmitError(`Error: ${errorMessage}`);
+      
+      // Add debugging information to console
+      console.log('Form data that failed:', formData);
     } finally {
       setIsSubmitting(false);
     }

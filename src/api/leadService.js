@@ -5,6 +5,35 @@ import axios from 'axios';
  */
 const API_URL = 'https://display.ringba.com/enrich/263344012027051643';
 
+// Set to true to use mock API instead of real endpoint
+const USE_MOCK_API = true;
+
+// Configure axios defaults
+axios.defaults.headers.common['Content-Type'] = 'application/json';
+axios.defaults.timeout = 10000; // 10 seconds timeout
+
+/**
+ * Mock API for testing without making real network requests
+ * @param {Object} leadData - The lead data
+ * @returns {Promise} - Mock response
+ */
+const mockApiCall = (leadData) => {
+  return new Promise((resolve) => {
+    console.log('MOCK API CALL - No network request made');
+    console.log('Lead data received:', leadData);
+    
+    // Simulate network delay
+    setTimeout(() => {
+      resolve({
+        status: 'ok',
+        message: 'Lead submitted successfully (MOCK)',
+        lead_id: leadData.sourceId,
+        timestamp: new Date().toISOString()
+      });
+    }, 1000); // 1 second delay
+  });
+};
+
 /**
  * Saves a lead to localStorage for tracking
  * @param {Object} leadData - The lead data to save
@@ -103,37 +132,81 @@ export const exportLeadsToCSV = (leads) => {
  */
 export const submitTortLead = async (leadData) => {
   try {
-    const response = await axios.post(API_URL, null, {
-      params: {
-        isTest: leadData.isTest ? '1' : '0',
-        callerId: leadData.callerId,
-        claimantName: leadData.claimantName,
-        claimantEmail: leadData.claimantEmail,
-        sourceId: leadData.sourceId,
-        incidentState: leadData.incidentState,
-        incidentDate: formatDate(leadData.incidentDate),
-        atFault: leadData.atFault ? 'Yes' : 'No',
-        attorney: leadData.attorney ? 'Yes' : 'No',
-        seekingNewAttorney: leadData.seekingNewAttorney ? 'Yes' : 'No',
-        settlement: leadData.settlement ? 'Yes' : 'No',
-        hasInsurance: leadData.hasInsurance === true ? 'Yes' : leadData.hasInsurance === false ? 'No' : '',
-        insuranceCoverage: leadData.insuranceCoverage || '',
-        trustedFormCertURL: leadData.trustedFormCertURL || '',
-        pubId: leadData.pubId || ''
-      }
+    // Use mock API if enabled
+    if (USE_MOCK_API) {
+      const mockResponse = await mockApiCall(leadData);
+      
+      // Save to lead history
+      saveLeadToHistory(leadData, 'success');
+      
+      return mockResponse;
+    }
+    
+    // Create a new URLSearchParams object to properly format the request
+    const params = new URLSearchParams();
+    params.append('isTest', leadData.isTest ? '1' : '0');
+    params.append('callerId', leadData.callerId);
+    params.append('claimantName', leadData.claimantName || '');
+    params.append('claimantEmail', leadData.claimantEmail || '');
+    params.append('sourceId', leadData.sourceId);
+    params.append('incidentState', leadData.incidentState);
+    params.append('incidentDate', formatDate(leadData.incidentDate));
+    params.append('atFault', leadData.atFault ? 'Yes' : 'No');
+    params.append('attorney', leadData.attorney ? 'Yes' : 'No');
+    params.append('seekingNewAttorney', leadData.seekingNewAttorney ? 'Yes' : 'No');
+    params.append('settlement', leadData.settlement ? 'Yes' : 'No');
+    params.append('hasInsurance', leadData.hasInsurance === true ? 'Yes' : leadData.hasInsurance === false ? 'No' : '');
+    params.append('insuranceCoverage', leadData.insuranceCoverage || '');
+    params.append('trustedFormCertURL', leadData.trustedFormCertURL || '');
+    params.append('pubId', leadData.pubId || '');
+    
+    // Log the request for debugging
+    console.log('Submitting lead to API:', API_URL);
+    console.log('With params:', Object.fromEntries(params));
+    
+    // Alternative approach using fetch instead of axios to avoid CORS issues
+    const response = await fetch(`${API_URL}?${params.toString()}`, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
     });
+    
+    // Check if the request was successful
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    
+    const data = await response.json();
     
     // Save to lead history
     saveLeadToHistory(leadData, 'success');
     
-    return response.data;
+    return data;
   } catch (error) {
     console.error('Error submitting lead:', error);
     
     // Save failed submission to history
     saveLeadToHistory(leadData, 'failed');
     
-    throw error;
+    // For debugging - log the full error
+    console.log('Full error details:', error);
+    
+    // Handle different types of errors
+    if (error.message === 'Network Error') {
+      throw new Error('Unable to connect to the server. Please check your internet connection and try again.');
+    } else if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      throw new Error(`Server error: ${error.response.status} - ${error.response.data}`);
+    } else if (error.request) {
+      // The request was made but no response was received
+      throw new Error('No response from server. Please try again later.');
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      throw error;
+    }
   }
 };
 
