@@ -36,7 +36,7 @@ const Footer = styled.footer`
   font-size: 0.9rem;
 `;
 
-const MainLayout = ({ children, title = "TORT X MVA Lead Form" }) => {
+const MainLayout = ({ children, title = "Claim Connectors MVA Lead Form" }) => {
   return (
     <LayoutContainer>
       <Header>
@@ -46,7 +46,7 @@ const MainLayout = ({ children, title = "TORT X MVA Lead Form" }) => {
         {children}
       </Content>
       <Footer>
-        &copy; {new Date().getFullYear()} TORT X MVA System
+        &copy; {new Date().getFullYear()} Claim Connectors MVA System
       </Footer>
     </LayoutContainer>
   );

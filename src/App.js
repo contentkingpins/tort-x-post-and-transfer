@@ -56,7 +56,7 @@ function App() {
   return (
     <>
       <GlobalStyles />
-      <MainLayout title="TORT X MVA Lead Form">
+      <MainLayout title="Claim Connectors MVA Lead Form">
         <NavContainer>
           <NavButton 
             active={activeView === 'form'} 

@@ -252,7 +252,7 @@ const TortLeadForm = () => {
     hasInsurance: null, // can be null (not answered), true, or false
     insuranceCoverage: null, // 'both', 'unsure', or 'none'
     trustedFormCertURL: '',
-    pubId: 'Claim-Connectors'
+    pubId: 'CCBFTX'
   });
   
   // UI state
@@ -402,7 +402,7 @@ const TortLeadForm = () => {
           hasInsurance: null,
           insuranceCoverage: null,
           trustedFormCertURL: '',
-          pubId: 'Claim-Connectors'
+          pubId: 'CCBFTX'
         });
         
         setErrors({});
