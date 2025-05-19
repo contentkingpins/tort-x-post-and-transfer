@@ -144,7 +144,6 @@ export const submitTortLead = async (leadData) => {
     
     // Create a new URLSearchParams object to properly format the request
     const params = new URLSearchParams();
-    params.append('isTest', leadData.isTest ? '1' : '0');
     params.append('callerId', leadData.callerId);
     params.append('claimantName', leadData.claimantName || '');
     params.append('claimantEmail', leadData.claimantEmail || '');

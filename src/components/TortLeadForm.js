@@ -238,7 +238,6 @@ const SectionTitle = styled.h3`
 const TortLeadForm = () => {
   // Form state
   const [formData, setFormData] = useState({
-    isTest: false,
     callerId: '',
     claimantName: '',
     claimantEmail: '',
@@ -249,8 +248,8 @@ const TortLeadForm = () => {
     attorney: false,
     seekingNewAttorney: false,
     settlement: false,
-    hasInsurance: null, // can be null (not answered), true, or false
-    insuranceCoverage: null, // 'both', 'unsure', or 'none'
+    hasInsurance: null,
+    insuranceCoverage: null,
     trustedFormCertURL: '',
     pubId: 'CCBFTX'
   });
@@ -382,13 +381,11 @@ const TortLeadForm = () => {
       if (response && response.status === 'ok') {
         setSubmitSuccess(true);
         
-        // Set transfer DID number (this would come from the API response in a real app)
-        // For demonstration, we're using a static number
+        // Set transfer DID number
         setTransferDID('833-715-6010');
         
         // Reset form but generate a new sourceId
         setFormData({
-          isTest: false,
           callerId: '',
           claimantName: '',
           claimantEmail: '',
@@ -465,21 +462,7 @@ const TortLeadForm = () => {
       )}
       
       <Form onSubmit={handleSubmit}>
-        {/* Test Mode Toggle */}
-        <FormGroup>
-          <RadioOption>
-            <input
-              type="checkbox"
-              id="isTest"
-              name="isTest"
-              checked={formData.isTest}
-              onChange={handleChange}
-            />
-            <Label htmlFor="isTest">Test Mode</Label>
-          </RadioOption>
-        </FormGroup>
-        
-        {/* Caller ID / Phone Number */}
+        {/* Caller ID / Phone Number - first form field now */}
         <FormGroup>
           <Label htmlFor="callerId">Claimant's Phone Number*</Label>
           <Input
